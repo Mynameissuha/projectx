@@ -1,0 +1,77 @@
+services:
+  web:
+    build: ./flask
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    depends_on: 
+      backend:
+        condition: service_started
+    ports: 
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/ngnix.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      - secure_network
+
+  backend:
+    build: ./backend
+    container_name: corporate_backend
+    environment: 
+      - REDIS_URL=redis://redis_chache:6379/0
+      - DB_URL=postgresql://postgres_user:postgres_pass@postgres_db:5432/bank_db
+    depends_on:
+      redis_cache:
+        condition: service_healthy
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - secure_network
+
+  redis_chache:
+    image: redis:7-alpine
+    container_name: corporate_redis
+    healthcheck:
+      test: ["CMD","redis-cli","ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - secure_network
+  
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: corporate_postgres
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_DB: bank_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U postgres_user -d bank_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - secure_network
+  
+  tls_monitor:
+    build: ./monitor
+    container_name: tls_ tracker
+    depends_on:
+      - nginx
+    networks:
+      - secure_network
+
+  networks:
+    secure_network:
+      driver: bridge
+
+  volumes:
+    pg_data:
+
+  
