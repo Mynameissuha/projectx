@@ -61,7 +61,7 @@ services:
   
   tls_monitor:
     build: ./monitor
-    container_name: tls_ tracker
+    container_name: tls_tracker
     depends_on:
       - nginx
     networks:
