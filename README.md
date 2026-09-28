@@ -30,7 +30,7 @@ flowchart TD
 
     subgraph Server["Server"]
         Nginx -->|"mTLS"| Flask["Flask backend"]
-        Flask -->|"Еncoded paycard key"| Redis[("Redis")]
+        Flask -->|"Persist generated token & card hash"| Redis[("Redis")]
         Flask -->|"Store paycard key"| Postgres[("PostgreSQL")]
 
         Prometheus["Prometheus"] -.->|"Probe TLS certificates"| Nginx
