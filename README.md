@@ -1,6 +1,7 @@
 
 
-#Secure Payment Gateway Prototype with mTLS & Monitoring [WIP]
+# Secure Payment Gateway Prototype with mTLS & Monitoring [WIP]
+
 ## Project Overview
 The goal is a secure, high-performance payment gateway prototype designed to simulate banking backend infrastructure. The project focuses on zero-trust network architecture, data persistence, and automated TLS certificate monitoring.
 
